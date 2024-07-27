@@ -39,6 +39,41 @@
 #define BKSecondAddLEDPin 25
 #define BKThirdAddLEDPin 23
 
+#define TFT_BLACK 0x0000
+#define TFT_LIGHTGREY 0x5555
+#define TFT_BLUE 0x001F
+#define TFT_RED 0xF800
+#define TFT_GREEN 0x07E0
+#define TFT_DARKGREEN 0x0320
+#define TFT_CYAN 0x07FF
+#define TFT_MAGENTA 0xF81F
+#define TFT_YELLOW 0xFFE0
+#define TFT_WHITE 0xFFFF
+#define TFT_ORANGE 0xFD20
+#define TFT_GREENYELLOW 0xAFE5
+
+// V12i 4/5/22 SettingVariable Indices
+#define MTSTKpIndex 0
+#define MTSTKiIndex 1
+#define MTSTKdIndex 2
+
+#define MTKpIndex 3
+#define MTKiIndex 4
+#define MTKdIndex 5
+
+#define MTSpIndex 6 //MT Temperature Set Point;
+#define MTWaterToGrainRatioIndex 7
+#define MTGrainTempIndex 8
+#define MTInitialWaterTempIndex 9
+#define MTRampOffTempIndex 10
+#define MTPIDStartTempIndex 11
+
+#define MashTimeIndex	12
+#define BoilTimeIndex	13
+#define FirstAddTimeIndex	14
+#define SecondAddTimeIndex	15
+#define ThirdAddTimeIndex	16
+
 #include <MCUFRIEND_kbv.h>
 #include <TouchScreen.h>
 
@@ -216,40 +251,7 @@ struct StateSystem {
   UPDATE 3/28
   Took color #define statements from adafruit pdf page 6 of 26
 **********************/
-#define TFT_BLACK 0x0000
-#define TFT_LIGHTGREY 0x5555
-#define TFT_BLUE 0x001F
-#define TFT_RED 0xF800
-#define TFT_GREEN 0x07E0
-#define TFT_DARKGREEN 0x0320
-#define TFT_CYAN 0x07FF
-#define TFT_MAGENTA 0xF81F
-#define TFT_YELLOW 0xFFE0
-#define TFT_WHITE 0xFFFF
-#define TFT_ORANGE 0xFD20
-#define TFT_GREENYELLOW 0xAFE5
 
-// V12i 4/5/22 SettingVariable Indices
-#define MTSTKpIndex 0
-#define MTSTKiIndex 1
-#define MTSTKdIndex 2
-
-#define MTKpIndex 3
-#define MTKiIndex 4
-#define MTKdIndex 5
-
-#define MTSpIndex 6 //MT Temperature Set Point;
-#define MTWaterToGrainRatioIndex 7
-#define MTGrainTempIndex 8
-#define MTInitialWaterTempIndex 9
-#define MTRampOffTempIndex 10
-#define MTPIDStartTempIndex 11
-
-#define MashTimeIndex	12
-#define BoilTimeIndex	13
-#define FirstAddTimeIndex	14
-#define SecondAddTimeIndex	15
-#define ThirdAddTimeIndex	16
 // double g_MTActTime;
 // JUNE 22 2022
 // CONFLICTING DECLARATION with long unsigned int g_MTActTime
