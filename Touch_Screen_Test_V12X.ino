@@ -1,5 +1,6 @@
 #include "DriveOutput.h"
 #include "ScreenDraw_V12W_Feb232023.h"
+#include "MashTempController.h"
 #include <Adafruit_GFX.h>
 #include <MCUFRIEND_kbv.h>
 #include <TouchScreen.h>
@@ -8,6 +9,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EEPROM.h>
+#include <Vector.h>
 
 // MARCH 22 2022
 // in screendraw.h these variables exist for the functions to work in the header
@@ -60,6 +62,35 @@ double& MTGrainTemp =           SettingVariable[MTGrainTempIndex];
 double& MTInitialWaterTemp =    SettingVariable[MTInitialWaterTempIndex];
 double& MTRampOffTemp =         SettingVariable[MTRampOffTempIndex];
 double& MTPIDStartTemp =        SettingVariable[MTPIDStartTempIndex];
+
+/*
+struct DriveOutputStruct
+{
+public:
+
+	unsigned long windowStartTime;
+	int WindowSize = 10000;
+	volatile long onTime = 0;
+	void DoDriveOutput(void); // only called from StateSystem::MashPID()
+
+private:
+	
+};
+void DriveOutputStruct::DoDriveOutput( void ) {
+  long now = millis();
+  // Set the output.  "on time" is proportional to the PID output
+
+  if (now - windowStartTime > WindowSize) { //time to shift the Relay Window
+      windowStartTime += WindowSize;
+  }
+
+  if ((onTime > 100) && (onTime > (now - windowStartTime))) { // 3/6/22 WHAT DOES THIS DO
+      digitalWrite(RelayPin, HIGH);
+  } else {
+      digitalWrite(RelayPin, LOW);
+  }
+}
+*/
 
 double& BoilTime =              SettingVariable[BoilTimeIndex];
 double& FirstAddTime =          SettingVariable[FirstAddTimeIndex];
@@ -123,7 +154,6 @@ DriveOutputStruct DriveOutput;
 const int logInterval = 1000; // log every 10 seconds
 long lastLogTime = 0;
 //Specify the links and initial tuning parameters
-PID myPID(&Input, &Output, &MTStrikeTemp, SettingVariable[MTSTKpIndex], SettingVariable[MTSTKiIndex], SettingVariable[MTSTKdIndex], P_ON_M, DIRECT);
 
 int pixel_x, pixel_y;     //Touch_getXY() updates global vars
 bool Touch_getXY(void)
@@ -341,6 +371,9 @@ void SaveParameters() {
   }
 }
 
+PID myPID(&Input, &Output, &MTStrikeTemp, SettingVariable[MTSTKpIndex], SettingVariable[MTSTKiIndex], SettingVariable[MTSTKdIndex], P_ON_M, DIRECT);
+
+DodgeBrewingSystems::MashPIDv1DallasRelayController mash{};
 
 // ************************************************
 // Execute the control loop
@@ -794,6 +827,9 @@ void StateSystem::MashPID() {
 
 
 void setup() {
+  //8/1/24
+  mash.mashPID = myPID;
+
   // put your setup code here, to run once:
   // opens serial port, sets data rate to 9600 bps
   Serial.begin(9600);
@@ -960,34 +996,6 @@ pinMode (BKThirdAddLEDBluePin,OUTPUT);
   TIMSK2 |= 1 << TOIE2;
   
 }
-
-// ************************************************
-// Timer Interrupt Handler
-// ************************************************
-
-// previous argument to SIGNAL was : TIMER2_OVF_vect
-SIGNAL(TIMER2_OVF_vect ) // function definition?
-
-{
-  //  if (opState == OFF) {
-  if (globalState == stateList::OFF) {
-    digitalWrite(RelayPin, LOW); // make sure relay is off
-  }
-  else if (globalState == stateList::RAMPUP) {
-    digitalWrite(RelayPin, HIGH); // make sure relay is off
-  }
-  else if
-  (globalState == stateList::RAMPOFF) {
-    digitalWrite(RelayPin, LOW); // make sure relay is off
-  }
-  else
-  {
-     DriveOutput.DoDriveOutput();
-  }
-
-}
-
-//*********************End copy from Peltier_PID v12
 
 void loop()
 {
@@ -1203,7 +1211,11 @@ if ( sys.MashTimerObj.get_time_count_down() == 0 ){
 
 }
 
+void pinsAndBuzzers {
 
+  
+
+}
 
 
 // main program can use isPressed(), justPressed() etc
@@ -1407,6 +1419,10 @@ void CheckSettingButtonPress () {
 
   return;
 }
+
+Vector<int> hello();
+
+Vector<int> intVec;
 
 void CheckIncDecButtonPress () {
   if (Dec10_btn.justPressed() && SettingVariable[SettingIndex] > 9.9)
